@@ -61,11 +61,10 @@
 
                 // Base64データを表示する
                 resultElement.textContent = base64;
-                console.log(base64.length);
                 document.querySelector("#len").textContent = addCommasToNumber(base64.length);
                 document.querySelector("#img").src = base64;
 
-                var two_len = textToBinary(base64);
+                var two_len = deflate(base64);
                 document.querySelector("#len2").textContent = addCommasToNumber(two_len.length);
                 document.querySelector("#result2").textContent = two_len;
             };
@@ -74,47 +73,28 @@
             reader.readAsDataURL(file);
         });
 
-        function addCommasToNumber(number) {
+        const addCommasToNumber = number => {
             // Intl.NumberFormatを使用してコンマを追加
             var formatter = new Intl.NumberFormat('en-US');
             return formatter.format(number);
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const deflate = value => {
-                value = encodeURIComponent(value);         // UTF-16 → UTF-8
-                value = window.RawDeflate.deflate(value);  // rawdeflate.js
-                value = btoa(value);                       // Base64 Encode
-                return value;
-            };
-            const inflate = value => {
-                value = atob(value);                       // Base64 Decode
-                value = window.RawDeflate.inflate(value);  // rawinflate.js
-                value = decodeURIComponent(value);         // UTF-8 → UTF-16
-                return value;
-            };
+        // 圧縮関数
+        const deflate = value => {
+            value = encodeURIComponent(value);         // テキストをUTF-16からUTF-8に変換
+            value = window.RawDeflate.deflate(value);  // rawdeflate.jsを使用して圧縮
+            value = btoa(value);                       // Base64エンコード
+            return value;
+        };
 
-            const zipText = () => {
-                document.getElementById('deflated').value = deflate(document.getElementById('inflated').value);
-            };
-            const unzipText = () => {
-                document.getElementById('inflated').value = inflate(document.getElementById('deflated').value);
-            };
+        // 解凍関数
+        const inflate = value => {
+            value = atob(value);                       // Base64デコード
+            value = window.RawDeflate.inflate(value);  // rawinflate.jsを使用して解凍
+            value = decodeURIComponent(value);         // UTF-8からUTF-16に変換
+            return value;
+        };
 
-            const params = [...new URLSearchParams(location.search)].reduce((acc, pair) => ({ ...acc, [pair[0]]: pair[1] }), {});
-            if (params) console.log('Params', params);
-            if (params.inflate) {
-                document.getElementById('inflated').value = params.inflate;
-                zipText();
-            }
-            if (params.deflate) {
-                document.getElementById('deflated').value = params.deflate;
-                unzipText();
-            }
-
-            document.getElementById('inflated').addEventListener('input', zipText);
-            document.getElementById('deflated').addEventListener('input', unzipText);
-        });
 
     </script>
 </body>
