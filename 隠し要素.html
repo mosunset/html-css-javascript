@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>隠しページ</title>
+    <style>
+        * {
+            margin: 0;
+            border: 0;
+            padding: 0;
+        }
+
+        body {
+            width: 100%;
+            min-height: 140vh;
+            background-color: rgb(120, 167, 255);
+            position: relative;
+        }
+
+        div {
+            width: 100px;
+            height: 100px;
+            text-align: center;
+            size: 5em;
+            color: whitesmoke;
+        }
+
+        div:nth-child(1) {
+            width: 400px;
+            background-color: rgb(255, 0, 0);
+        }
+
+        div:nth-child(2) {
+            width: 300px;
+            background-color: rgb(119, 255, 0);
+        }
+
+        div:nth-child(3) {
+            width: 200px;
+            background-color: rgb(0, 140, 255);
+        }
+
+        div:nth-child(4) {
+            background-color: rgb(174, 0, 255);
+        }
+
+        div:nth-child(5) {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: black;
+            top: 195px;
+            left: 195px;
+        }
+        div:nth-child(6) {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: black;
+            top: 395px;
+            left: 395px;
+        }
+    </style>
+</head>
+
+<body>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <script>
+        //クリック位置
+        window.addEventListener('load', function () {
+
+            document.body.addEventListener('click', logPosition);
+        });
+
+        function logPosition(e) {
+            // console.log("clientX: " + e.clientX);
+            // console.log("clientY: " + e.clientY);
+            console.log("pageX: " + e.pageX);
+            console.log("pageY: " + e.pageY);
+            if ((195 <= e.pageX && e.pageX <= 205 && 195 <= e.pageY && e.pageY <= 205)||(395 <= e.pageX && e.pageX <= 405 && 395 <= e.pageY && e.pageY <= 405)) {
+                console.log("clear");
+            } else {
+                console.log("fail");
+            }
+        }
+
+        //コナミコマンド
+        document.addEventListener('keydown', function (ev) {
+            console.log(ev.keyCode);
+        });
+        (function () {
+            'use strict';
+
+            var
+                // 入力受付時間（1.5秒）
+                wait = 500,
+
+                // standby = false の時は入力を受け付けない
+                standby = true,
+
+                // コマンドのキーコード
+                command = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65],
+
+                length = command.length,
+                index = 0,
+                timer = null;
+
+            document.addEventListener('keydown', function (ev) {
+                // タイマーのリセット
+                clearTimeout(timer);
+
+                // コマンドの確認
+                if (standby && ev.keyCode === command[index]) {
+
+                    index++;
+
+                    if (index >= length) {
+                        // すべてのコマンドを入力した！
+
+                        standby = false;  // 処理中にコマンドを受け付けないようにする
+                        index = 0;  // コマンドリセット
+
+                        /*
+                
+                            何かしらの処理
+                            処理が完了したら standby = true に戻す
+                
+                        */
+
+                        document.querySelector("div").innerText = "clear";
+                        console.log("clear");
+
+                        standby = true
+
+                    } else {
+                        // 一定時間入力がなかったらリセット
+                        timer = setTimeout(function () {
+                            index = 0;
+                        }, wait);
+                    }
+
+                } else {
+                    // コマンドが間違っていたらリセット
+                    index = 0;
+                    console.log("fail");
+                }
+            });
+        })();
+    </script>
+</body>
+
+</html>

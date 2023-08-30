@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>base64 test</title>
+    <style>
+        #fileInput {
+            width: 50%;
+        }
+
+        textarea {
+            box-sizing: border-box;
+            min-height: 30vh;
+            max-height: 60vh;
+            min-width: 49%;
+            max-width: 49%;
+            overflow-y: scroll;
+        }
+
+        #len::after {
+            content: " 文字";
+        }
+
+        #img {
+            max-width: 95%;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ファイルを選択するためのファイル入力要素 -->
+    <input type="file" id="fileInput">
+
+    <!-- Base64変換結果を表示する要素 -->
+    <p>Base64形式のデータ : <span id="len">0</span></p>
+    <p>2進数形式のデータ : <span id="len2">0</span></p>
+    <textarea id="result" rows='10' cols='50'></textarea>
+    <textarea id="result2" rows='10' cols='50'></textarea>
+    <!-- Base64から画像 -->
+    <img loading="lazy" src="" id="img">
+
+    <script src="./rawdeflate.js"></script>
+    <script src="./rawinflate.js"></script>
+    <script>
+        // ファイル入力要素を取得
+        var fileInput = document.getElementById("fileInput");
+
+        // Base64変換結果を表示する要素を取得
+        var resultElement = document.getElementById("result");
+
+        // ファイルが選択されたときの処理を定義
+        fileInput.addEventListener("change", function () {
+            var file = fileInput.files[0];
+            var reader = new FileReader();
+
+            // ファイルを読み込んだときの処理を定義
+            reader.onload = function () {
+                var base64 = reader.result; // Base64形式の画像データ
+
+                // Base64データを表示する
+                resultElement.textContent = base64;
+                console.log(base64.length);
+                document.querySelector("#len").textContent = addCommasToNumber(base64.length);
+                document.querySelector("#img").src = base64;
+
+                var two_len = textToBinary(base64);
+                document.querySelector("#len2").textContent = addCommasToNumber(two_len.length);
+                document.querySelector("#result2").textContent = two_len;
+            };
+
+            // ファイルを読み込む
+            reader.readAsDataURL(file);
+        });
+
+        function addCommasToNumber(number) {
+            // Intl.NumberFormatを使用してコンマを追加
+            var formatter = new Intl.NumberFormat('en-US');
+            return formatter.format(number);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const deflate = value => {
+                value = encodeURIComponent(value);         // UTF-16 → UTF-8
+                value = window.RawDeflate.deflate(value);  // rawdeflate.js
+                value = btoa(value);                       // Base64 Encode
+                return value;
+            };
+            const inflate = value => {
+                value = atob(value);                       // Base64 Decode
+                value = window.RawDeflate.inflate(value);  // rawinflate.js
+                value = decodeURIComponent(value);         // UTF-8 → UTF-16
+                return value;
+            };
+
+            const zipText = () => {
+                document.getElementById('deflated').value = deflate(document.getElementById('inflated').value);
+            };
+            const unzipText = () => {
+                document.getElementById('inflated').value = inflate(document.getElementById('deflated').value);
+            };
+
+            const params = [...new URLSearchParams(location.search)].reduce((acc, pair) => ({ ...acc, [pair[0]]: pair[1] }), {});
+            if (params) console.log('Params', params);
+            if (params.inflate) {
+                document.getElementById('inflated').value = params.inflate;
+                zipText();
+            }
+            if (params.deflate) {
+                document.getElementById('deflated').value = params.deflate;
+                unzipText();
+            }
+
+            document.getElementById('inflated').addEventListener('input', zipText);
+            document.getElementById('deflated').addEventListener('input', unzipText);
+        });
+
+    </script>
+</body>
+
+</html>
