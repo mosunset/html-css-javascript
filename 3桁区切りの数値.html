@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formatted Number</title>
+    <style>
+        #formattedNumber {
+            background-color: aquamarine;
+        }
+
+        #formattedNumber>span::before {
+            content: ",";
+        }
+    </style>
+</head>
+
+<body>
+    <div id="formattedNumber" contenteditable="true">1234567890</div>
+
+    <script>
+        // 数値をフォーマットするJavaScript関数
+        function formatNumberWithCommas(number) {
+            return Number(number).toString().replace(/\B(?=(\d{3})+(?!\d))/g, "</span><span>");
+        }
+
+        const formattedNumberElement = document.getElementById("formattedNumber");
+        formattedNumberElement.addEventListener("click", formatnumber);
+        //formattedNumberElement.addEventListener("mousemove", formatnumber);
+        formattedNumberElement.addEventListener("blur", formatnumber);
+        function formatnumber() {
+            formattedNumberElement.innerHTML = formatNumberWithCommas(formattedNumberElement.textContent);
+        }
+    </script>
+
+</body>
+
+</html>
