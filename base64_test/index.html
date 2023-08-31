@@ -34,6 +34,7 @@
     <input type="file" id="fileInput">
 
     <!-- Base64変換結果を表示する要素 -->
+    <p>圧縮後のデータ : <span id="len1">0</span></p>
     <p>Base64形式のデータ : <span id="len">0</span></p>
     <p>圧縮後のデータ : <span id="len2">0</span></p>
     <textarea id="result" rows='10' cols='50'></textarea>
@@ -95,7 +96,37 @@
             return value;
         };
 
+        const textToBinary = text => {
+            let binaryString = '';
 
+            for (let i = 0; i < text.length; i++) {
+                // 文字をASCIIコードに変換
+                const asciiValue = text.charCodeAt(i);
+
+                // ASCIIコードを2進数に変換し、8桁の固定長にする
+                const binaryValue = asciiValue.toString(2).padStart(8, '0');
+
+                // 2進数文字列を累積
+                binaryString += binaryValue;
+            }
+
+            return binaryString;
+        }
+
+        const binaryToText = binaryString => {
+            let text = '';
+            for (let i = 0; i < binaryString.length; i += 8) {
+                // 8文字ずつの二進数文字列を取得
+                const binaryChunk = binaryString.substr(i, 8);
+
+                // 2進数文字列を10進数に変換し、ASCIIコードに変換
+                const asciiValue = parseInt(binaryChunk, 2);
+
+                // ASCIIコードを文字に変換して追加
+                text += String.fromCharCode(asciiValue);
+            }
+            return text;
+        }
     </script>
 </body>
 
