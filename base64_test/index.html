@@ -34,13 +34,14 @@
     <input type="file" id="fileInput">
 
     <!-- Base64変換結果を表示する要素 -->
-    <p>圧縮後のデータ : <span id="len1">0</span></p>
     <p>Base64形式のデータ : <span id="len">0</span></p>
     <p>圧縮後のデータ : <span id="len2">0</span></p>
     <textarea id="result" rows='10' cols='50'></textarea>
     <textarea id="result2" rows='10' cols='50'></textarea>
     <!-- Base64から画像 -->
     <img loading="lazy" src="" id="img">
+
+    <video src="" id="video" controls muted autoplay></video>
 
     <script src="./rawdeflate.js"></script>
     <script src="./rawinflate.js"></script>
@@ -64,10 +65,11 @@
                 resultElement.textContent = base64;
                 document.querySelector("#len").textContent = addCommasToNumber(base64.length);
                 document.querySelector("#img").src = base64;
+                document.querySelector("#video").src = base64;
 
-                var two_len = deflate(base64);
-                document.querySelector("#len2").textContent = addCommasToNumber(two_len.length);
-                document.querySelector("#result2").textContent = two_len;
+                // var two_len = deflate(base64);
+                // document.querySelector("#len2").textContent = addCommasToNumber(two_len.length);
+                // document.querySelector("#result2").textContent = two_len;
             };
 
             // ファイルを読み込む
